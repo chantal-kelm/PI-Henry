@@ -1,6 +1,6 @@
 # Support Assistant Agent 🤖 (LangGraph Pipeline)
 
-Este proyecto implementa un agente automatizado e interactivo de soporte al cliente utilizando una arquitectura de grafos orientada a nodos con **LangGraph** y validación estricta de datos mediante contratos **Pydantic**. El diseño toma como referencia los patrones desacoplados y limpios del framework corporativo `cop-fx-intelligence`.
+Este proyecto implementa un agente automatizado e interactivo de soporte al cliente utilizando una arquitectura de grafos orientada a nodos con **LangGraph** y validación estricta de datos mediante contratos **Pydantic**.
 
 El sistema incluye mitigación perimetral de seguridad para interceptar inyecciones de prompt maliciosas a costo cero y telemetría nativa para auditar el consumo exacto de la API.
 
@@ -18,35 +18,44 @@ El flujo de control se desacopla en nodos funcionales aislados dentro de un bucl
 El proyecto incluye pruebas unitarias automatizadas mediante `pytest` para validar la integridad de los contratos JSON y el comportamiento del guardrail perimetral (conteo de tokens a cero en ataques).
 
 Para ejecutar la suite de pruebas de forma automática, corre:
+
 ```bash
 uv run pytest src/support_assistant/test_pipeline.py
-
+```
 
 ## 🚀 Requisitos e Instalación
 
 Este proyecto gestiona sus dependencias mediante **`uv`**, el instalador y gestor de entornos ultra-rápido para Python.
 
 ### 1. Clonar el repositorio y posicionarse en la raíz
+
 ```bash
-cd pi-henry
+cd PI-Henry
+```
 
 2. Configurar las Variables de Entorno
 
 Crea un archivo .env en la raíz del proyecto (basándote en tu archivo de configuración) con tus credenciales oficiales de OpenAI:
 
+```bash
 OPENAI_API_KEY=tu_api_key_aqui
+```
 
 3. Instalar Dependencias
 Sincroniza el entorno virtual aislado ejecutando:
 
+```bash
 uv sync
+```
 
 
 💻 Ejecución del Asistente Interactivo
 
 Para lanzar el asistente de soporte en modo interactivo en tiempo real (CLI), ejecuta el comando modular absoluto desde la raíz:
 
+```bash
 uv run python -m src.support_assistant.main
+```
 
 🎮 Simulación de Uso en Consola
 
@@ -71,35 +80,34 @@ Escribe tu consulta de soporte abajo (o escribe 'salir' para terminar).
   "total_tokens": 415,
   "estimated_cost_usd": 0.000143
 }
-============================================================
 
 
-Estructura del proyecto
 
 ## 📂 Estructura del Proyecto
 
 ```text
 pi-henry/
-├── .venv/                 # Entorno virtual aislado gestionado por uv
-├── src/
-│   └── support_assistant/
+├── .venv/                 # Entorno virtual de Python (uv)
+├── src/                   # Directorio de código fuente
+│   └── support_assistant/ # Módulo principal del agente
 │       ├── __pycache__/
-│       ├── __init__.py    # Inicializador del paquete modular
-│       ├── config.py      # Orquestador de entornos y variables (.env)
-│       ├── contracts.py   # Contratos de datos y esquemas rígidos de Pydantic
-│       ├── llm.py         # Factoría agnóstica para conmutación de modelos
-│       ├── main.py        # Grafo de LangGraph y CLI de simulación interactiva
-│       └── nodes.py       # Lógica funcional de seguridad y llamados al LLM
-├── .env                   # Variables críticas de entorno (API Keys)
-├── .gitignore             # Exclusiones de Git (vicios de compilación y caché)
-├── .python-version        # Especificación de versión del intérprete
-├── pyproject.toml         # Manifiesto global de dependencias del proyecto
-├── README.md              # Guía de inicio rápido y uso del sistema
-├── REPORT.md              # Reporte técnico y justificación de arquitectura
-└── uv.lock                # Archivo de bloqueo determinista de dependencias
+│       ├── __init__.py    # Inicializador de paquete
+│       ├── config.py      # Carga de entornos (.env)
+│       ├── contracts.py   # Modelos y contratos Pydantic
+│       ├── llm.py         # Factoría de conmutación de LLM
+│       ├── main.py        # Grafo LangGraph y CLI interactiva
+│       ├── nodes.py       # Nodos de seguridad y asistente
+│       └── test_pipeline.py # Tests automatizados con Pytest
+├── .env                   # Credenciales privadas de OpenAI
+├── .gitignore             # Archivos excluidos de Git
+├── .python-version        # Versión local activa de Python
+├── pyproject.toml         # Dependencias y configuraciones
+├── README.md              # Guía de inicio rápido (este archivo)
+├── REPORT.md              # Reporte de arquitectura técnica
+└── uv.lock                # Bloqueo de dependencias de uv
+```
 
-
-📄 Documentación Técnica Adicional
+## Documentación Técnica Adicional
 Para un análisis detallado sobre las decisiones de ingeniería, el control de presupuesto con mitigación adversarial y la justificación técnica de la arquitectura de grafos, consulta el documento de diseño en la raíz del proyecto:
 
 👉 REPORT.md
