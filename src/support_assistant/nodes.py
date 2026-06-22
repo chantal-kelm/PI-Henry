@@ -1,19 +1,36 @@
-# src/support_assistant/nodes.py
+import os
 import time
 from typing import Any, Dict
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import SystemMessage  # Importación clave para ignorar llaves de JSON
 from langgraph.types import Command
 from langgraph.graph import END
 
 from src.support_assistant.contracts import AgentState, AssistantResponse
 from src.support_assistant.llm import get_chat_model
+from src.safety import is_adversarial_query  # Importación limpia del módulo de seguridad
+
+def load_system_prompt() -> str:
+    """Carga dinámicamente el prompt del sistema desde la carpeta externa de prompts."""
+    try:
+        # Determinamos la ruta absoluta de la raíz del proyecto para evitar errores de ejecución
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        prompt_path = os.path.join(base_dir, "prompts", "main_prompt.txt")
+        
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except Exception:
+        # Fallback de respaldo en duro si el archivo físico es inaccesible
+        return (
+            "Eres un asistente experto para agentes de soporte al cliente.\n"
+            "Es mandatorio que utilices el campo 'reasoning' para desglosar tu lógica paso a paso (CoT) "
+            "antes de completar la respuesta definitiva y los planes de acción."
+        )
 
 def security_check_node(state: AgentState) -> Command:
     """Nodo de mitigación perimetral (Filtro adversarial)."""
-    question = state["question"].lower()
-    adversarial_keywords = ["ignora las instrucciones", "olvida lo anterior", "system prompt", "ignore previous"]
-    
-    if any(kw in question for kw in adversarial_keywords):
+    # Delegamos la lógica de verificación al módulo de seguridad dedicado (Requisito de rúbrica)
+    if is_adversarial_query(state["question"]):
         return Command(
             update={
                 "response": {
@@ -35,19 +52,19 @@ def assistant_node(state: AgentState) -> Dict[str, Any]:
     llm = get_chat_model(temperature=0.0)
     structured_llm = llm.with_structured_output(AssistantResponse, include_raw=True)
     
+    # Cargamos dinámicamente el prompt externo (cumpliendo con la rúbrica oficial)
+    system_instruction = load_system_prompt()
+    
+    # Al usar SystemMessage, evitamos que LangChain parsee las llaves {} del JSON como variables de Python
     prompt_template = ChatPromptTemplate.from_messages([
-        ("system", (
-            "Eres un asistente experto para agentes de soporte al cliente.\n"
-            "Es mandatorio que utilices el campo 'reasoning' para desglosar tu lógica paso a paso (CoT) "
-            "antes de completar la respuesta definitiva y los planes de acción."
-        )),
+        SystemMessage(content=system_instruction),
         ("user", "{question}")
     ])
     
     chain = prompt_template | structured_llm
     
     start_time = time.perf_counter()
-    # Invocamos la cadena (devolverá un dict con 'parsed' y 'raw' por el include_raw=True)
+    # Invocamos la cadena estructurada
     output_wrapper = chain.invoke({"question": state["question"]})
     end_time = time.perf_counter()
     

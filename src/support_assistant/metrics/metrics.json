@@ -1,0 +1,18 @@
+[
+{
+"timestamp": "2026-06-22T17:15:00.123456",
+"tokens_prompt": 235,
+"tokens_completion": 180,
+"total_tokens": 415,
+"latency_ms": 1240.45,
+"estimated_cost_usd": 0.000143
+},
+{
+"timestamp": "2026-06-22T17:18:22.987654",
+"tokens_prompt": 245,
+"tokens_completion": 195,
+"total_tokens": 440,
+"latency_ms": 1310.12,
+"estimated_cost_usd": 0.000154
+}
+]

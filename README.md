@@ -1,78 +1,76 @@
-# Support Assistant Agent 🤖 (LangGraph Pipeline)
+## Support Assistant Agent 🤖 (LangGraph Pipeline)
 
-Este proyecto implementa un agente automatizado e interactivo de soporte al cliente utilizando una arquitectura de grafos orientada a nodos con **LangGraph** y validación estricta de datos mediante contratos **Pydantic**.
+This project implements an automated and interactive customer support agent utilizing a node-oriented graph architecture with LangGraph and strict data validation via Pydantic contracts.
 
-El sistema incluye mitigación perimetral de seguridad para interceptar inyecciones de prompt maliciosas a costo cero y telemetría nativa para auditar el consumo exacto de la API.
+The system features a zero-cost perimetral security guardrail to intercept malicious prompt injections and native telemetry to persistently audit exact API token usage and cost.
+
+### 🏗️ System Architecture
+
+The execution control flow is decoupled into isolated functional nodes operating within a continuous interactive Command Line Interface (CLI) loop:
+
+security_check_node: Heuristically analyzes customer input for adversarial phrases using the independent safety.py module. If an attack is detected, it immediately reroutes the flow to the end (END) without invoking the paid model API.
+
+assistant_node: Structurally invokes the gpt-4o-mini model, parsing the external prompt template, applying Chain-of-Thought (CoT) reasoning, and calculating native usage metrics.
+
+### 🧪 Automated Tests
+
+The project includes automated unit tests using pytest to validate the integrity of JSON contracts and the behavior of the perimetral guardrail (ensuring zero token consumption during attacks).
+
+To run the official automated test suite, execute the following command from the project root:
+
+uv run pytest tests/test_core.py
 
 
-## 🏗️ Arquitectura del Sistema
+### 🚀 Setup & Installation
 
-El flujo de control se desacopla en nodos funcionales aislados dentro de un bucle interactivo continuo por consola (CLI):
+This project manages its dependencies using uv, the ultra-fast Python package installer and resolver.
 
-1. **`security_check_node`**: Analiza heurísticamente el input del cliente en busca de frases adversariales. Si detecta un ataque, desvía el flujo inmediatamente al final (`END`) sin tocar la API de pago.
-
-2. **`assistant_node`**: Invoca de manera estructurada al modelo `gpt-4o-mini` para procesar consultas legítimas, aplicando *Chain of Thought* (CoT) y calculando las métricas nativas de uso.
-
-## 🧪 Tests Automatizados
-
-El proyecto incluye pruebas unitarias automatizadas mediante `pytest` para validar la integridad de los contratos JSON y el comportamiento del guardrail perimetral (conteo de tokens a cero en ataques).
-
-Para ejecutar la suite de pruebas de forma automática, corre:
-
-```bash
-uv run pytest src/support_assistant/test_pipeline.py
-```
-
-## 🚀 Requisitos e Instalación
-
-Este proyecto gestiona sus dependencias mediante **`uv`**, el instalador y gestor de entornos ultra-rápido para Python.
-
-### 1. Clonar el repositorio y posicionarse en la raíz
+1. Clone the Repository and Navigate to the Root
 
 ```bash
 cd PI-Henry
 ```
 
-2. Configurar las Variables de Entorno
+2. Configure Environment Variables
 
-Crea un archivo .env en la raíz del proyecto (basándote en tu archivo de configuración) con tus credenciales oficiales de OpenAI:
+Create a .env file in the root directory of the project with your official OpenAI API credentials:
 
 ```bash
-OPENAI_API_KEY=tu_api_key_aqui
+OPENAI_API_KEY=your_api_key_here
 ```
 
-3. Instalar Dependencias
-Sincroniza el entorno virtual aislado ejecutando:
+3. Install Dependencies
+
+Synchronize the isolated virtual environment by executing:
 
 ```bash
 uv sync
 ```
 
+💻 Running the Interactive Assistant
 
-💻 Ejecución del Asistente Interactivo
-
-Para lanzar el asistente de soporte en modo interactivo en tiempo real (CLI), ejecuta el comando modular absoluto desde la raíz:
+To launch the main executable application (CLI) in real-time interactive mode, execute the following command from the root directory:
 
 ```bash
-uv run python -m src.support_assistant.main
+uv run python src/run_query.py
 ```
 
-🎮 Simulación de Uso en Consola
+### 🎮 Console Simulation Example
 
-🤖 [SISTEMA DE SOPORTE INICIADO]
-Escribe tu consulta de soporte abajo (o escribe 'salir' para terminar).
+🤖 [SUPPORT SYSTEM INITIALIZED]
+Type your support query below or type 'salir' to exit.
 
-👤 Cliente (ingresa tu pregunta): compre una suscripcion ayer y quiero saber cuanto dura?
+👤 Client (enter your question): compre una suscripcion ayer y quiero saber cuanto dura?
 
-📥 [CONSULTA PROCESADA]: compre una suscripcion ayer y quiero saber cuanto dura?
-🚀 [OUTPUT CONTRATO JSON DOWNSTREAM]
+📥 [QUERY PROCESSED]: compre una suscripcion ayer y quiero saber cuanto dura?
+🚀 [DOWNSTREAM JSON CONTRACT OUTPUT]
 {
-  "reasoning": "El cliente consulta por la duración de su suscripción...",
-  "answer": "Hola, con gusto verifico los detalles de tu plan...",
+  "reasoning": "The customer is asking about their subscription duration...",
+  "answer": "Hello! I would be happy to help you verify your subscription duration...",
   "confidence": 0.95,
-  "actions": ["Revisar base de datos de usuarios", "Validar vigencia del plan"]
+  "actions": ["Check user database", "Validate plan validity"]
 }
-📊 [MÉTRICAS REGISTRADAS]
+📊 [METRICS REGISTERED]
 {
   "latency_ms": 3210.45,
   "prompt_tokens": 235,
@@ -82,32 +80,60 @@ Escribe tu consulta de soporte abajo (o escribe 'salir' para terminar).
 }
 
 
+### 📊 Tracking & Reproducing Metrics
 
-## 📂 Estructura del Proyecto
+Every successful query automatically appends structured usage telemetry to a persistent audit log. To reproduce and check the records:
 
-```text
-pi-henry/
-├── .venv/                 # Entorno virtual de Python (uv)
-├── src/                   # Directorio de código fuente
-│   └── support_assistant/ # Módulo principal del agente
-│       ├── __pycache__/
-│       ├── __init__.py    # Inicializador de paquete
-│       ├── config.py      # Carga de entornos (.env)
-│       ├── contracts.py   # Modelos y contratos Pydantic
-│       ├── llm.py         # Factoría de conmutación de LLM
-│       ├── main.py        # Grafo LangGraph y CLI interactiva
-│       ├── nodes.py       # Nodos de seguridad y asistente
-│       └── test_pipeline.py # Tests automatizados con Pytest
-├── .env                   # Credenciales privadas de OpenAI
-├── .gitignore             # Archivos excluidos de Git
-├── .python-version        # Versión local activa de Python
-├── pyproject.toml         # Dependencias y configuraciones
-├── README.md              # Guía de inicio rápido (este archivo)
-├── REPORT.md              # Reporte de arquitectura técnica
-└── uv.lock                # Bloqueo de dependencias de uv
+Interact with the assistant by submitting a valid query using src/run_query.py.
+
+Type salir to safely terminate the session.
+
+Inspect the consolidated JSON report containing timestamps, token counts, latencies, and estimated costs at:
+
+```bash
+cat metrics/metrics.json
 ```
 
-## Documentación Técnica Adicional
-Para un análisis detallado sobre las decisiones de ingeniería, el control de presupuesto con mitigación adversarial y la justificación técnica de la arquitectura de grafos, consulta el documento de diseño en la raíz del proyecto:
+### ⚠️ Known Limitations
 
-👉 REPORT.md
+External API Dependency: Requires an active internet connection and available credit on the OpenAI API Key to process queries in the assistant nodes.
+
+Static Security Heuristics: The local guardrail intercepts common attack vectors at zero cost, but highly complex, multi-layered prompt injections might require a dedicated LLM-based moderation endpoint.
+
+Simple Local Persistence: Telemetry is stored locally as a flat JSON file, which limits concurrent access in multi-user distributed environments.
+
+### 📂 Project Structure
+
+```bash
+pi-henry/
+├── .venv/                 # Python virtual environment (uv)
+├── src/                   # Main source code directory
+│   ├── support_assistant/ # Agent logical module
+│   │   ├── __init__.py
+│   │   ├── config.py      # Environment (.env) loader and config
+│   │   ├── contracts.py   # Pydantic data schemas and contracts
+│   │   ├── llm.py         # Agnostic LLM model factory
+│   │   ├── main.py        # LangGraph definition & CLI loop
+│   │   └── nodes.py       # Execution nodes (security and assistant)
+│   ├── run_query.py       # Official entrypoint script (M1 Requirement)
+│   └── safety.py          # Perimetral security validation module
+├── prompts/               # Required folder for prompt templates
+│   └── main_prompt.txt    # Structured system prompt with Few-Shot examples
+├── metrics/               # Persistent analytics data directory
+│   └── metrics.json       # Telemetry execution logs (JSON format)
+├── reports/               # Technical reports and documentation
+│   └── PI_report_en.md    # Brief technical architecture report
+├── tests/                 # Automated test suite
+│   └── test_core.py       # Token count and contract validation tests
+├── .env                   # Private OpenAI credentials (git-ignored)
+├── .gitignore             # Files and patterns excluded from Git
+├── .python-version        # Active local Python version specifier
+├── pyproject.toml         # Project dependencies and configurations
+└── uv.lock                # Deterministic dependency lock file
+```
+
+### Additional Technical Documentation
+
+The comprehensive engineering report covering architectural decisions, prompt engineering techniques (Few-Shot), metrics formulas, and solved technical challenges can be found in the reports folder:
+
+👉 PI_report_en.md
