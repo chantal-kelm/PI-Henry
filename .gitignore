@@ -11,4 +11,3 @@ wheels/
 
 # Environment variables and private credentials
 .env
-.env.*
