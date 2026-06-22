@@ -69,7 +69,15 @@ El pipeline está diseñado bajo estándares de producción independientes, pres
 
 Gracias a la incorporación de la interfaz interactiva por consola, el sistema permite realizar pruebas de estrés en caliente (*ad-hoc testing*). Esto facilita la evaluación inmediata del comportamiento del agente tras cada consulta, exponiendo con total transparencia las latencias físicas del backend (`latency_ms`), el volumen granular de tokens procesados (`prompt_tokens`, `completion_tokens`) y los costos financieros reales proyectados por cada ejecución.
 
+## 6. Estrategia de Testing Automatizado y Validación de Regresión
+Para garantizar la estabilidad del sistema ante futuros cambios en el código o actualizaciones en las instrucciones del LLM, se integró una suite de pruebas automatizadas mediante **Pytest** (`test_pipeline.py`).
 
-## 6. Conclusión
+La prueba unitaria implementada automatiza el control de calidad ejecutando las siguientes validaciones deterministas sin intervención humana:
+1. **Validación del Contrato de Rechazo:** Verifica de forma matemática que el nodo de seguridad detecte inyecciones de prompt complejas y devuelva exactamente la estructura JSON con el estado `REJECTED` y el mensaje de error correspondiente.
+2. **Auditoría Estricta de Consumo de API:** Confirma mediante aserciones (`assert`) que el volumen total de tokens consumidos y el costo financiero estimado sean **estrictamente 0.0**, garantizando que el guardrail perimetral corte el flujo antes de generar gastos innecesarios.
 
-La arquitectura presentada demuestra la viabilidad de implementar agentes de IA controlados, seguros y de costo predecible. La integración de un bucle CLI interactivo montado sobre un estado validado por Pydantic no solo soluciona los problemas clásicos de aleatoriedad en los LLMs, sino que transforma el proyecto en una herramienta auditable, escalable y lista para integrarse en pipelines de integración y despliegue continuo (CI/CD) corporativos.
+Este enfoque permite mitigar de forma automatizada posibles regresiones de seguridad durante ciclos de integración continua (CI/CD).
+
+
+## 7. Conclusión
+La arquitectura presentada demuestra la viabilidad de implementar agentes de IA controlados, seguros y de costo predecible. La integración de un bucle CLI interactivo montado sobre un estado validado por Pydantic, respaldado por una suite de pruebas automatizadas, no solo soluciona los problemas clásicos de aleatoriedad en los LLMs, sino que transforma el proyecto en una herramienta auditable, resiliente a fallos y lista para su despliegue seguro en entornos corporativos reales.

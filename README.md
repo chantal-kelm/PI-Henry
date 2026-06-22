@@ -4,7 +4,6 @@ Este proyecto implementa un agente automatizado e interactivo de soporte al clie
 
 El sistema incluye mitigación perimetral de seguridad para interceptar inyecciones de prompt maliciosas a costo cero y telemetría nativa para auditar el consumo exacto de la API.
 
----
 
 ## 🏗️ Arquitectura del Sistema
 
@@ -13,6 +12,14 @@ El flujo de control se desacopla en nodos funcionales aislados dentro de un bucl
 1. **`security_check_node`**: Analiza heurísticamente el input del cliente en busca de frases adversariales. Si detecta un ataque, desvía el flujo inmediatamente al final (`END`) sin tocar la API de pago.
 
 2. **`assistant_node`**: Invoca de manera estructurada al modelo `gpt-4o-mini` para procesar consultas legítimas, aplicando *Chain of Thought* (CoT) y calculando las métricas nativas de uso.
+
+## 🧪 Tests Automatizados
+
+El proyecto incluye pruebas unitarias automatizadas mediante `pytest` para validar la integridad de los contratos JSON y el comportamiento del guardrail perimetral (conteo de tokens a cero en ataques).
+
+Para ejecutar la suite de pruebas de forma automática, corre:
+```bash
+uv run pytest src/support_assistant/test_pipeline.py
 
 
 ## 🚀 Requisitos e Instalación
@@ -33,6 +40,7 @@ OPENAI_API_KEY=tu_api_key_aqui
 Sincroniza el entorno virtual aislado ejecutando:
 
 uv sync
+
 
 💻 Ejecución del Asistente Interactivo
 
