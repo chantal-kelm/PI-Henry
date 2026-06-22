@@ -76,3 +76,8 @@ Semantic Safety Classifier: Replace the static keyword check in src/safety.py wi
 Stateful Chat Memory: Transition the CLI from a single-query setup to a multi-turn conversational agent using LangGraph's native MemorySaver checkpointer.
 
 Persistent Analytics: Migrating the metrics.json flat file to a relational or non-relational serverless database to track latency and cost trends across multiple parallel instances.
+
+
+![alt text](image-1.png)
+![alt text](image.png)
+![alt text](image-2.png)

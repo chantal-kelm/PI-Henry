@@ -12,14 +12,6 @@ security_check_node: Heuristically analyzes customer input for adversarial phras
 
 assistant_node: Structurally invokes the gpt-4o-mini model, parsing the external prompt template, applying Chain-of-Thought (CoT) reasoning, and calculating native usage metrics.
 
-### 🧪 Automated Tests
-
-The project includes automated unit tests using pytest to validate the integrity of JSON contracts and the behavior of the perimetral guardrail (ensuring zero token consumption during attacks).
-
-To run the official automated test suite, execute the following command from the project root:
-
-uv run pytest tests/test_core.py
-
 
 ### 🚀 Setup & Installation
 
@@ -54,6 +46,20 @@ To launch the main executable application (CLI) in real-time interactive mode, e
 ```bash
 uv run python src/run_query.py
 ```
+
+![alt text](image-1.png)
+
+### 🧪 Automated Tests
+
+The project includes automated unit tests using pytest to validate the integrity of JSON contracts and the behavior of the perimetral guardrail (ensuring zero token consumption during attacks).
+
+To run the official automated test suite, execute the following command from the project root:
+
+```bash
+uv run pytest tests/test_core.py
+```
+
+![alt text](image.png)
 
 ### 🎮 Console Simulation Example
 
@@ -93,6 +99,7 @@ Inspect the consolidated JSON report containing timestamps, token counts, latenc
 ```bash
 cat metrics/metrics.json
 ```
+![alt text](image-2.png)
 
 ### ⚠️ Known Limitations
 
